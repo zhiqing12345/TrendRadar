@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrendRadar — AI Hotspot Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Serif+Display:ital@0;1&family=DM+Serif+Text:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════════════════
+           TRENDRADAR · LIGHT / DARK DUAL-THEME SYSTEM
+           ═══════════════════════════════════════════════════════ */
+
+        /* ── Light theme (default) ── */
+        :root,
+        [data-theme="light"] {
+            --bg:          #FFFFFF;
+            --bg-alt:      #F9F6FC;
+            --bg-alt2:     #F4FAFC;
+            --bg-alt3:     #F7FBFD;
+            --surface:     #FFFFFF;
+            --border:      #E8E4EC;
+            --border-sub:  #F0EDF4;
+            --ink:         #1C1917;
+            --body:        #4A4742;
+            --muted:       #8C8880;
+            --faint:       #B5B1AA;
+            --shadow:      rgba(42,21,89,0.05);
+            --shadow-hov:  rgba(42,21,89,0.12);
+            --nav-bg:      rgba(255,255,255,0.92);
+            --hero-grad:   linear-gradient(175deg, #FFFFFF 0%, #F9F6FC 40%, #F3EDFA 100%);
+            --tags-grad:   linear-gradient(180deg, #F9F6FC 0%, #FFFFFF 100%);
+            --ai-grad:     linear-gradient(180deg, #FFFFFF 0%, rgba(61,39,140,0.06) 50%, #FFFFFF 100%);
+            --rss-grad:    linear-gradient(180deg, #FFFFFF 0%, rgba(61,39,140,0.06) 50%, #FFFFFF 100%);
+            --deep-block:  #2A1559;
+            --deep-block-text: #FFFFFF;
+        }
+
+        /* ── Dark theme ── */
+        [data-theme="dark"] {
+            --bg:          #0F0B1A;
+            --bg-alt:      #16112A;
+            --bg-alt2:     #141F2A;
+            --bg-alt3:     #14222A;
+            --surface:     #1A1533;
+            --border:      #2A2450;
+            --border-sub:  #1F1A40;
+            --ink:         #EDEAF5;
+            --body:        #B5B0C8;
+            --muted:       #7B7598;
+            --faint:       #5C5680;
+            --shadow:      rgba(0,0,0,0.25);
+            --shadow-hov:  rgba(0,0,0,0.45);
+            --nav-bg:      rgba(15,11,26,0.92);
+            --hero-grad:   linear-gradient(175deg, #0F0B1A 0%, #16112A 40%, #1A1538 100%);
+            --tags-grad:   linear-gradient(180deg, #16112A 0%, #0F0B1A 100%);
+            --ai-grad:     linear-gradient(180deg, #0F0B1A 0%, rgba(61,39,140,0.15) 50%, #0F0B1A 100%);
+            --rss-grad:    linear-gradient(180deg, #0F0B1A 0%, rgba(61,39,140,0.15) 50%, #0F0B1A 100%);
+            --deep-block:  #16112A;
+            --deep-block-text: #EDEAF5;
+        }
+
+        /* ── Brand palette (constant across themes) ── */
+        :root {
+            --deep:     #2A1559;
+            --mid:      #46268C;
+            --lavender: #D6C9F2;
+            --lavender-dim:  rgba(214,201,242,0.12);
+            --lavender-soft: rgba(214,201,242,0.25);
+            --cyan:     #C9EBF2;
+            --cyan-dim:     rgba(201,235,242,0.12);
+            --sky:      #CCEDF9;
+            --sky-dim:      rgba(204,237,249,0.12);
+            --gold:     #C9A53B;
+            --red:      #E74C3C;
+
+            --h1:  clamp(52px, 8vw, 88px);
+            --h2:  clamp(28px, 4.5vw, 44px);
+            --h3:  clamp(20px, 2.5vw, 24px);
+            --t-lg:   1.125rem;
+            --t-base: 1rem;
+            --t-sm:   0.875rem;
+            --t-xs:   0.75rem;
+            --t-xxs:  0.6875rem;
+
+            --font-display: 'DM Serif Display', Georgia, serif;
+            --font-text:    'DM Serif Text', Georgia, serif;
+            --font-sans:    'DM Sans', -apple-system, system-ui, sans-serif;
+
+            --card-w: 384px;
+            --card-h: 558px;
+            --radius: 12px;
+            --ease: 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-sans);
+            font-size: var(--t-base); font-weight: 400; line-height: 1.6;
+            background: var(--bg); color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        /* ════════ LOADING ════════ */
+        .loading-screen {
+            position: fixed; inset: 0; display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+            gap: 1.5rem; background: var(--bg); z-index: 1000;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-rule {
+            width: 100px; height: 2px; background: var(--border);
+            position: relative; overflow: hidden;
+        }
+        .loader-rule::after {
+            content: ''; position: absolute; inset: 0;
+            background: var(--mid);
+            animation: load-rule 1.6s ease infinite;
+        }
+        @keyframes load-rule {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(0%); }
+            100% { transform: translateX(100%); }
+        }
+        .loading-label {
+            font-family: var(--font-display);
+            font-size: var(--t-base); color: var(--muted); font-style: italic;
+        }
+
+        /* ════════ STATE ════════ */
+        .state-screen {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 70vh; text-align: center; gap: 0.75rem; padding: 4rem 1.5rem;
+        }
+        .state-screen.visible { display: flex; }
+        .state-screen h2 { font-family: var(--font-display); font-size: var(--h2); color: var(--lavender); }
+        .state-screen p { color: var(--muted); max-width: 38ch; }
+
+        .main-content { display: none; }
+        .main-content.loaded { display: block; }
+
+        /* ════════ NAV ════════ */
+        .nav-bar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 16px 40px; display: flex; align-items: center; justify-content: space-between;
+            background: var(--nav-bg); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-sub);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+        .nav-brand {
+            font-family: var(--font-display);
+            font-size: 1.125rem; color: var(--ink); text-decoration: none;
+            transition: color 0.4s ease;
+        }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
+
+        /* ── Theme toggle ── */
+        .theme-toggle {
+            width: 44px; height: 44px; border-radius: 50%;
+            border: 1.5px solid var(--border); background: var(--surface);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all var(--ease); color: var(--muted);
+        }
+        .theme-toggle:hover { border-color: var(--mid); color: var(--mid); }
+        .theme-toggle svg { width: 18px; height: 18px; transition: transform 0.5s ease; }
+        [data-theme="dark"] .theme-toggle svg { transform: rotate(180deg); }
+
+        .nav-status {
+            display: flex; align-items: center; gap: 7px;
+            font-size: var(--t-xxs); font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--muted);
+        }
+        .nav-status::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22C55E;
+            animation: breathe 2.5s ease infinite;
+        }
+        @keyframes breathe { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.8)} }
+
+        /* ════════ HERO ════════ */
+        #sec-hero {
+            background: var(--hero-grad);
+            min-height: 90vh; display: flex; align-items: center;
+            padding-top: 160px; transition: background 0.4s ease;
+        }
+        .hero-inner { max-width: 1320px; margin: 0 auto; width: 100%; }
+        .hero-grid { display: grid; grid-template-columns: 5fr 4fr; gap: 96px; align-items: center; }
+        .hero-text { display: flex; flex-direction: column; gap: 1.5rem; }
+        .hero-label {
+            font-size: var(--t-xxs); font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--lavender);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .hero-label::before {
+            content: ''; width: 18px; height: 1px; background: var(--lavender);
+        }
+        .hero-headline {
+            font-family: var(--font-display);
+            font-size: var(--h1); font-weight: 400;
+            line-height: 0.93; letter-spacing: -0.035em; color: var(--ink);
+            transition: color 0.4s ease;
+        }
+        .hero-headline .hl-accent {
+            font-style: italic; color: var(--lavender); position: relative;
+        }
+        .hero-headline .hl-accent::after {
+            content: ''; position: absolute; bottom: 2px; left: 0;
+            width: 100%; height: 6px; background: var(--mid);
+            z-index: -1; opacity: 0.2;
+        }
+        .hero-sub {
+            font-size: var(--t-base); font-weight: 400; line-height: 1.7;
+            color: var(--muted); max-width: 40ch;
+        }
+        .hero-ctas { display: flex; gap: 0.75rem; margin-top: 0.25rem; }
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 30px; border: none; border-radius: 4px;
+            font-size: var(--t-sm); font-weight: 700; letter-spacing: 0.02em;
+            text-decoration: none; cursor: pointer;
+            background: var(--mid); color: #fff;
+            transition: all var(--ease);
+        }
+        .btn-primary:hover {
+            background: var(--deep);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(70,38,140,0.35);
+        }
+        .btn-secondary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 30px; border-radius: 4px;
+            font-size: var(--t-sm); font-weight: 600; letter-spacing: 0.02em;
+            text-decoration: none; cursor: pointer;
+            background: transparent; color: var(--ink);
+            border: 1.5px solid var(--border);
+            transition: all var(--ease);
+        }
+        .btn-secondary:hover {
+            border-color: var(--lavender); color: var(--lavender);
+            transform: translateY(-2px);
+        }
+
+        /* ── Hero cards ── */
+        .hero-visual { position: relative; height: 420px; }
+        .hero-card {
+            position: absolute; background: var(--surface);
+            border-radius: 12px; padding: 28px;
+            box-shadow: 0 8px 40px var(--shadow);
+            border: 1px solid var(--border-sub);
+            transition: transform 0.4s cubic-bezier(0.22,1,0.36,1),
+                        background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        .hero-card:nth-child(1) { width:260px; top:0; left:4%; transform:rotate(-2deg); z-index:3; }
+        .hero-card:nth-child(2) { width:280px; top:10%; right:0; transform:rotate(1.5deg); z-index:2; }
+        .hero-card:nth-child(3) { width:240px; bottom:2%; left:16%; transform:rotate(-0.5deg); z-index:1; }
+        .hero-card:hover { transform: rotate(0deg) scale(1.04); z-index: 10; }
+        .hero-card .tag {
+            display: inline-block; font-size: 9px; font-weight: 700;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 2px; margin-bottom: 14px;
+        }
+        .tag--red    { background: rgba(231,76,60,0.12);  color: var(--red); }
+        .tag--purple { background: var(--lavender-dim); color: var(--lavender); }
+        .hero-card .card-title {
+            font-family: var(--font-display); font-size: 1.125rem;
+            color: var(--ink); margin-bottom: 14px; line-height: 1.2;
+            transition: color 0.4s ease;
+        }
+        .hero-card .card-row {
+            font-size: var(--t-xs); color: var(--muted); padding: 5px 0;
+            border-bottom: 1px solid var(--border-sub);
+            transition: border-color 0.4s ease;
+        }
+        .hero-card .card-row:last-child { border-bottom: none; }
+
+        /* ════════ STATS ════════ */
+        #sec-stats {
+            background: var(--deep); color: var(--deep-block-text);
+            padding: 72px 40px;
+            transition: background 0.4s ease;
+        }
+        .stats-row {
+            max-width: 1320px; margin: 0 auto;
+            display: flex; justify-content: space-around; flex-wrap: wrap; gap: 48px;
+        }
+        .stat-item { text-align: center; }
+        .stat-num {
+            font-family: var(--font-display);
+            font-size: clamp(42px, 6vw, 68px); font-weight: 400;
+            line-height: 1; letter-spacing: -0.03em;
+        }
+        .stat-num.c1 { color: var(--lavender); }
+        .stat-num.c2 { color: var(--cyan); }
+        .stat-num.c3 { color: var(--gold); }
+        .stat-num.c4 { color: var(--sky); }
+        .stat-cap {
+            font-size: var(--t-xxs); font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase; opacity: 0.55; margin-top: 10px;
+        }
+
+        /* ════════ SECTIONS ════════ */
+        .sec { padding: 88px 40px; position: relative; }
+        .sec-inner { max-width: 1320px; margin: 0 auto; }
+        .sec-header { margin-bottom: 3rem; }
+        .sec-kicker {
+            font-size: var(--t-xxs); font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--lavender); margin-bottom: 0.75rem;
+        }
+        .sec-title {
+            font-family: var(--font-display);
+            font-size: var(--h2); font-weight: 400;
+            line-height: 1.1; letter-spacing: -0.025em; color: var(--ink);
+            transition: color 0.4s ease;
+        }
+        .sec-rule { width: 44px; height: 2px; background: var(--gold); margin-top: 1.25rem; }
+
+        /* ════════ TAGS ════════ */
+        #sec-tags {
+            background: var(--tags-grad);
+            transition: background 0.4s ease;
+        }
+        .tag-scroll {
+            display: flex; gap: 8px; overflow-x: auto;
+            scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 4px;
+        }
+        .tag-scroll::-webkit-scrollbar { display: none; }
+        .tag-chip {
+            flex-shrink: 0; padding: 10px 20px; border-radius: 4px;
+            font-size: var(--t-sm); font-weight: 600; white-space: nowrap;
+            background: var(--surface); color: var(--ink);
+            border: 1.5px solid var(--border);
+            cursor: pointer; transition: all var(--ease);
+        }
+        .tag-chip:hover { border-color: var(--lavender); color: var(--lavender); }
+        .tag-chip.is-active {
+            background: var(--mid); color: #fff; border-color: var(--mid);
+        }
+        .tag-chip .chip-count { font-size: var(--t-xxs); opacity: 0.5; margin-left: 4px; }
+
+        /* ════════ NEWS — fixed cards 384x558 ════════ */
+        #sec-news { background: var(--bg); transition: background 0.4s ease; }
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, var(--card-w));
+            gap: 28px; justify-content: center;
+        }
+        .news-block {
+            width: var(--card-w); height: var(--card-h);
+            background: var(--surface); border-radius: var(--radius);
+            border: 1px solid var(--border-sub);
+            box-shadow: 0 1px 4px var(--shadow);
+            transition: box-shadow var(--ease), transform var(--ease),
+                        background 0.4s ease, border-color 0.4s ease;
+            animation: fadeUp 0.45s ease backwards;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .news-block:hover {
+            box-shadow: 0 16px 44px var(--shadow-hov);
+            transform: translateY(-2px);
+        }
+        .news-block.is-hidden { display: none; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .block-hd {
+            flex-shrink: 0;
+            display: flex; align-items: baseline; justify-content: space-between;
+            padding: 28px 28px 0 28px; margin-bottom: 14px;
+        }
+        .block-title {
+            font-family: var(--font-display);
+            font-size: 1.0625rem; font-weight: 400;
+            color: var(--ink); line-height: 1.2;
+            transition: color 0.4s ease;
+        }
+        .block-tally {
+            font-size: var(--t-xxs); font-weight: 700; color: var(--muted);
+            background: var(--border-sub); padding: 3px 10px; border-radius: 3px;
+        }
+
+        .block-rule {
+            flex-shrink: 0;
+            height: 2px; background: var(--mid);
+            margin: 0 28px; opacity: 0.25;
+        }
+
+        .block-scroll {
+            flex: 1;
+            overflow-y: auto; overflow-x: hidden;
+            padding: 14px 28px 28px 28px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        .block-scroll::-webkit-scrollbar { width: 4px; }
+        .block-scroll::-webkit-scrollbar-track { background: transparent; }
+        .block-scroll::-webkit-scrollbar-thumb {
+            background: var(--border); border-radius: 4px;
+        }
+
+        .news-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 10px 0; border-bottom: 1px solid var(--border-sub);
+            text-decoration: none; color: inherit;
+            transition: padding var(--ease), border-color 0.4s ease;
+        }
+        .news-item:last-child { border-bottom: none; }
+        .news-item:hover { padding-left: 6px; }
+        .item-rank {
+            font-size: var(--t-xs); font-weight: 700; color: var(--border);
+            min-width: 22px; padding-top: 2px; flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .item-rank.is-top { color: var(--red); }
+        .item-body { flex: 1; min-width: 0; }
+        .item-title {
+            font-size: var(--t-sm); font-weight: 600; line-height: 1.45;
+            color: var(--ink); margin-bottom: 3px;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; text-overflow: ellipsis;
+            transition: color 0.4s ease;
+        }
+        .item-meta { display: flex; align-items: center; gap: 6px; }
+        .item-source {
+            font-size: var(--t-xxs); font-weight: 500; color: var(--faint);
+            letter-spacing: 0.02em;
+        }
+        .item-new-pill {
+            font-size: 9px; font-weight: 700; letter-spacing: 0.05em;
+            text-transform: uppercase; color: var(--red);
+            background: rgba(231,76,60,0.12); padding: 2px 6px; border-radius: 2px;
+        }
+
+        /* ════════ AI ANALYSIS ════════ */
+        #sec-ai {
+            background: var(--ai-grad);
+            transition: background 0.4s ease;
+        }
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+        .ai-card {
+            background: var(--surface);
+            border-radius: var(--radius); padding: 36px;
+            border: 1px solid var(--border-sub);
+            border-left: 3px solid var(--cyan);
+            box-shadow: 0 1px 3px var(--shadow);
+            transition: transform var(--ease), background 0.4s ease, border-color 0.4s ease;
+        }
+        .ai-card:hover { transform: translateY(-2px); }
+        .ai-card h4 {
+            font-family: var(--font-display);
+            font-size: 1.0625rem; font-weight: 400; color: var(--ink);
+            margin-bottom: 10px; line-height: 1.25;
+            transition: color 0.4s ease;
+        }
+        .ai-card p {
+            font-family: var(--font-text);
+            font-size: var(--t-sm); color: var(--body); line-height: 1.7;
+            transition: color 0.4s ease;
+        }
+
+        /* ════════ RSS ════════ */
+        #sec-rss {
+            background: var(--rss-grad);
+            transition: background 0.4s ease;
+        }
+        .rss-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+        .rss-block {
+            background: var(--surface);
+            border-radius: var(--radius); padding: 36px;
+            border: 1px solid var(--border-sub);
+            border-top: 3px solid var(--sky);
+            box-shadow: 0 1px 3px var(--shadow);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+        .rss-block h4 {
+            font-family: var(--font-display);
+            font-size: 1.0625rem; font-weight: 400; color: var(--ink);
+            margin-bottom: 20px; padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-sub);
+            transition: color 0.4s ease, border-color 0.4s ease;
+        }
+        .rss-entry {
+            display: block; text-decoration: none; color: inherit;
+            padding: 10px 0; border-bottom: 1px solid var(--border-sub);
+            transition: padding var(--ease), border-color 0.4s ease;
+        }
+        .rss-entry:last-child { border-bottom: none; }
+        .rss-entry:hover { padding-left: 8px; }
+        .rss-entry .title {
+            font-size: var(--t-sm); font-weight: 600; line-height: 1.45;
+            color: var(--ink); margin-bottom: 2px;
+            transition: color 0.4s ease;
+        }
+        .rss-entry .ts {
+            font-size: var(--t-xxs); font-weight: 500; color: var(--faint);
+            letter-spacing: 0.02em;
+        }
+
+        /* ════════ FOOTER ════════ */
+        #sec-footer {
+            background: var(--deep); color: rgba(255,255,255,0.5);
+            padding: 56px 40px;
+            transition: background 0.4s ease;
+        }
+        .footer-row {
+            max-width: 1320px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 20px;
+        }
+        .footer-logo {
+            font-family: var(--font-display); font-size: 1.25rem; color: #fff;
+        }
+        .footer-live {
+            display: flex; align-items: center; gap: 10px;
+            font-size: var(--t-sm); font-weight: 500;
+        }
+        .footer-live::before {
+            content: ''; width: 6px; height: 6px; border-radius: 50%;
+            background: var(--lavender); animation: breathe 2.5s ease infinite;
+        }
+
+        /* ════════ PROGRESS BAR ════════ */
+        .progress-bar {
+            position: fixed; top: 0; left: 0; height: 2px;
+            background: linear-gradient(90deg, var(--lavender), var(--mid), var(--cyan));
+            z-index: 999; transition: width 0.1s linear;
+        }
+
+        /* ════════ RESPONSIVE ════════ */
+        @media (max-width: 900px) {
+            .sec { padding: 56px 20px; }
+            #sec-hero { padding: 120px 20px 64px; min-height: auto; }
+            .hero-grid { grid-template-columns: 1fr; gap: 56px; }
+            .hero-visual { height: 240px; }
+            .hero-card:nth-child(1) { width:180px; top:0; left:0; }
+            .hero-card:nth-child(2) { width:200px; top:5%; right:0; }
+            .hero-card:nth-child(3) { width:160px; bottom:0; left:5%; }
+            .stats-row { gap: 28px; }
+            .news-grid { grid-template-columns: 1fr; justify-items: center; }
+            .news-block { width: min(var(--card-w), 100%); }
+            .ai-grid, .rss-grid { grid-template-columns: 1fr; }
+            .hero-headline { font-size: clamp(36px, 10vw, 52px); }
+            .nav-bar { padding: 14px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader-rule"></div>
+        <span class="loading-label">Gathering intelligence...</span>
+    </div>
+
+    <div class="state-screen" id="errorScreen">
+        <h2>Connection interrupted</h2>
+        <p>Unable to fetch the latest report. TrendRadar may be processing fresh data.</p>
+        <a href="/ui/" class="btn-primary">Retry</a>
+    </div>
+
+    <div class="state-screen" id="emptyScreen">
+        <h2>Brewing your report</h2>
+        <p>TrendRadar is scanning headlines across platforms. Fresh, AI-curated insights will appear here shortly.</p>
+    </div>
+
+    <div class="main-content" id="mainContent">
+
+        <nav class="nav-bar">
+            <a href="#" class="nav-brand">TrendRadar</a>
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+                    <!-- Sun icon -->
+                    <svg id="iconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <!-- Moon icon -->
+                    <svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+                <span class="nav-status">Live</span>
+            </div>
+        </nav>
+
+        <section id="sec-hero">
+            <div class="hero-inner">
+                <div class="hero-grid">
+                    <div class="hero-text">
+                        <p class="hero-label">AI-Powered Curation</p>
+                        <h1 class="hero-headline">
+                            Your radar<br>
+                            for what<br>
+                            <span class="hl-accent">matters</span><br>
+                            right now.
+                        </h1>
+                        <p class="hero-sub">
+                            Cutting through the noise with precision AI filtering.
+                            Only the stories that match your interests, curated and
+                            delivered every half hour.
+                        </p>
+                        <div class="hero-ctas">
+                            <a href="#sec-news" class="btn-primary">Explore Headlines</a>
+                            <a href="#sec-tags" class="btn-secondary">Filter by Topic</a>
+                        </div>
+                    </div>
+                    <div class="hero-visual" id="heroVisual"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-stats">
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-num c3" id="statTotal">--</div>
+                    <div class="stat-cap">Headlines Scanned</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num c2" id="statMatch">--</div>
+                    <div class="stat-cap">AI-Matched</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num c1" id="statCats">--</div>
+                    <div class="stat-cap">Categories</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num c4" id="statSources">--</div>
+                    <div class="stat-cap">Sources</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="sec" id="sec-tags">
+            <div class="sec-inner">
+                <div class="sec-header">
+                    <p class="sec-kicker">Filter by Interest</p>
+                    <h2 class="sec-title">What are you curious about today?</h2>
+                    <div class="sec-rule"></div>
+                </div>
+                <div class="tag-scroll" id="tagScroll"></div>
+            </div>
+        </section>
+
+        <section class="sec" id="sec-news">
+            <div class="sec-inner">
+                <div class="sec-header">
+                    <p class="sec-kicker">Curated For You</p>
+                    <h2 class="sec-title">The stories worth your attention.</h2>
+                    <div class="sec-rule"></div>
+                </div>
+                <div class="news-grid" id="newsGrid"></div>
+            </div>
+        </section>
+
+        <section class="sec" id="sec-ai" style="display:none;">
+            <div class="sec-inner">
+                <div class="sec-header">
+                    <p class="sec-kicker">Deep Analysis</p>
+                    <h2 class="sec-title">AI breaks down the big picture.</h2>
+                    <div class="sec-rule"></div>
+                </div>
+                <div class="ai-grid" id="aiGrid"></div>
+            </div>
+        </section>
+
+        <section class="sec" id="sec-rss" style="display:none;">
+            <div class="sec-inner">
+                <div class="sec-header">
+                    <p class="sec-kicker">Live Feeds</p>
+                    <h2 class="sec-title">From the sources you trust.</h2>
+                    <div class="sec-rule"></div>
+                </div>
+                <div class="rss-grid" id="rssGrid"></div>
+            </div>
+        </section>
+
+        <section id="sec-footer">
+            <div class="footer-row">
+                <span class="footer-logo">TrendRadar</span>
+                <span class="footer-live">
+                    Refreshed every 30 min &middot; <span id="footerTime">--</span>
+                </span>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    /* ════════ THEME TOGGLE ════════ */
+    (function() {
+        const html = document.documentElement;
+        const toggle = document.getElementById('themeToggle');
+        const iconSun = document.getElementById('iconSun');
+        const iconMoon = document.getElementById('iconMoon');
+
+        // Load saved preference
+        const saved = localStorage.getItem('trendradar-theme');
+        if (saved === 'dark') {
+            html.setAttribute('data-theme', 'dark');
+            iconSun.style.display = 'none';
+            iconMoon.style.display = 'block';
+        }
+
+        toggle.addEventListener('click', () => {
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            const next = isDark ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('trendradar-theme', next);
+            iconSun.style.display = next === 'dark' ? 'none' : 'block';
+            iconMoon.style.display = next === 'dark' ? 'block' : 'none';
+        });
+    })();
+
+    /* ════════ PROGRESS ════════ */
+    window.addEventListener('scroll', () => {
+        const pct = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100;
+        document.getElementById('progressBar').style.width = Math.min(pct, 100) + '%';
+    });
+
+    function esc(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    /* ════════ DATA ENGINE ════════ */
+    (async function() {
+        const LOADING = document.getElementById('loadingScreen');
+        const ERROR = document.getElementById('errorScreen');
+        const EMPTY = document.getElementById('emptyScreen');
+        const MAIN = document.getElementById('mainContent');
+
+        try {
+            // Auto-detect path: Docker (absolute) vs GitHub Pages (relative)
+            const isGH = location.hostname.includes('github.io');
+            const reportUrl = isGH ? '../html/latest/current.html' : '/html/latest/current.html';
+            const resp = await fetch(reportUrl);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const raw = await resp.text();
+            const doc = new DOMParser().parseFromString(raw, 'text/html');
+
+            const groups = [];
+            doc.querySelectorAll('.word-group').forEach(wg => {
+                const name = wg.querySelector('.word-name')?.textContent.trim();
+                const countText = wg.querySelector('.word-count')?.textContent.trim() || '0';
+                const count = parseInt(countText.replace(/[^0-9]/g,'')) || 0;
+                if (!name) return;
+                const items = [];
+                wg.querySelectorAll('.news-item').forEach(ni => {
+                    const title = ni.querySelector('.news-title a')?.textContent.trim()
+                        || ni.querySelector('.news-title')?.textContent.trim() || '';
+                    const source = ni.querySelector('.source-name')?.textContent.trim() || '';
+                    const link = ni.querySelector('.news-link')?.getAttribute('href') || '#';
+                    const isNew = ni.classList.contains('new');
+                    if (title) items.push({ title, source, link, isNew });
+                });
+                if (items.length) groups.push({ name, count, items });
+            });
+
+            const aiBlocks = [];
+            doc.querySelectorAll('.ai-block').forEach(b => {
+                const title = b.querySelector('.ai-block-title')?.textContent.trim() || '';
+                const content = b.querySelector('.ai-block-content')?.textContent.trim() || '';
+                if (title || content) aiBlocks.push({ title, content });
+            });
+
+            const rssFeeds = [];
+            doc.querySelectorAll('.feed-group').forEach(fg => {
+                const name = fg.querySelector('.feed-name')?.textContent.trim() || '';
+                const items = [];
+                fg.querySelectorAll('.rss-item').forEach(ri => {
+                    const title = ri.querySelector('.rss-title a')?.textContent.trim()
+                        || ri.querySelector('.rss-title')?.textContent.trim() || '';
+                    const time = ri.querySelector('.rss-time')?.textContent.trim() || '';
+                    const link = ri.querySelector('.rss-link')?.getAttribute('href') || '#';
+                    if (title) items.push({ title, time, link });
+                });
+                if (name && items.length) rssFeeds.push({ name, items });
+            });
+
+            let totalNews = 0;
+            const tv = doc.querySelector('.info-value');
+            if (tv) totalNews = parseInt(tv.textContent) || 0;
+
+            let platformCount = '--';
+            const pm = doc.body.textContent.match(/监控平台数量:\s*(\d+)/);
+            if (pm) platformCount = pm[1];
+
+            let updateTime = '--';
+            const tm = doc.body.textContent.match(/(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})/);
+            if (tm) updateTime = tm[0];
+
+            if (!groups.length && !aiBlocks.length && !rssFeeds.length) {
+                LOADING.classList.add('hidden');
+                EMPTY.classList.add('visible');
+                return;
+            }
+
+            const totalMatch = groups.reduce((s,g) => s + g.items.length, 0);
+            document.getElementById('statTotal').textContent = totalNews || totalMatch;
+            document.getElementById('statMatch').textContent = totalMatch;
+            document.getElementById('statCats').textContent = groups.length;
+            document.getElementById('statSources').textContent = platformCount;
+            document.getElementById('footerTime').textContent = updateTime;
+
+            const topGroup = groups.length
+                ? groups.reduce((a,b) => a.items.length > b.items.length ? a : b) : null;
+            const heroCards = [
+                { tagCls:'tag--red',    tagTxt:'Trending', title: topGroup ? topGroup.name : 'Hot Now', items: groups.slice(0,2).flatMap(g=>g.items.slice(0,2)) },
+                { tagCls:'tag--purple', tagTxt:'AI Picks', title: 'Curated', items: groups.slice(2,4).flatMap(g=>g.items.slice(0,2)) },
+                { tagCls:'tag--red',    tagTxt:'Latest',   title: 'Just In',  items: groups.flatMap(g=>g.items.filter(i=>i.isNew)).slice(0,3) },
+            ];
+            if (!heroCards[2].items.length && groups.length > 1)
+                heroCards[2].items = groups[groups.length-1].items.slice(0,3);
+            document.getElementById('heroVisual').innerHTML = heroCards.map(d => `
+                <div class="hero-card">
+                    <span class="tag ${d.tagCls}">${d.tagTxt}</span>
+                    <div class="card-title">${esc(d.title)}</div>
+                    ${d.items.map(it=>`<div class="card-row">${esc(it.title.substring(0,45))}${it.title.length>45?'...':''}</div>`).join('')}
+                    ${!d.items.length ? '<div class="card-row">Awaiting fresh data...</div>' : ''}
+                </div>
+            `).join('');
+
+            const tagScroll = document.getElementById('tagScroll');
+            const allBtn = document.createElement('button');
+            allBtn.className = 'tag-chip is-active';
+            allBtn.textContent = 'All';
+            allBtn.onclick = () => filterNews(null);
+            tagScroll.appendChild(allBtn);
+            groups.forEach((g,i) => {
+                const chip = document.createElement('button');
+                chip.className = 'tag-chip';
+                chip.innerHTML = `${esc(g.name)} <span class="chip-count">${g.items.length}</span>`;
+                chip.onclick = () => filterNews(i);
+                tagScroll.appendChild(chip);
+            });
+
+            const newsGrid = document.getElementById('newsGrid');
+            groups.forEach((g,i) => {
+                const block = document.createElement('div');
+                block.className = 'news-block';
+                block.setAttribute('data-group', i);
+                block.style.animationDelay = `${i * 60}ms`;
+                block.innerHTML = `
+                    <div class="block-hd">
+                        <span class="block-title">${esc(g.name)}</span>
+                        <span class="block-tally">${g.items.length}</span>
+                    </div>
+                    <div class="block-rule"></div>
+                    <div class="block-scroll">
+                        ${g.items.map((item,j) => `
+                            <a href="${esc(item.link)}" target="_blank" rel="noopener" class="news-item">
+                                <span class="item-rank${j < 3 ? ' is-top' : ''}">${String(j+1).padStart(2,'0')}</span>
+                                <div class="item-body">
+                                    <div class="item-title">${esc(item.title)}${item.isNew ? ' <span class="item-new-pill">New</span>' : ''}</div>
+                                    <div class="item-meta">
+                                        <span class="item-source">${esc(item.source)}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        `).join('')}
+                    </div>
+                `;
+                newsGrid.appendChild(block);
+            });
+
+            window.filterNews = function(idx) {
+                document.querySelectorAll('.tag-chip').forEach((b,i) =>
+                    b.classList.toggle('is-active', i === (idx === null ? 0 : idx + 1)));
+                document.querySelectorAll('.news-block').forEach(b =>
+                    b.classList.toggle('is-hidden', idx !== null && parseInt(b.getAttribute('data-group')) !== idx));
+                if (idx !== null)
+                    document.getElementById('sec-news').scrollIntoView({ behavior:'smooth', block:'start' });
+            };
+
+            if (aiBlocks.length) {
+                document.getElementById('sec-ai').style.display = 'block';
+                const aiGrid = document.getElementById('aiGrid');
+                aiBlocks.forEach(b => {
+                    const card = document.createElement('div');
+                    card.className = 'ai-card';
+                    card.innerHTML = `<h4>${esc(b.title)}</h4><p>${esc(b.content).replace(/\n/g,'<br>')}</p>`;
+                    aiGrid.appendChild(card);
+                });
+            }
+
+            if (rssFeeds.length) {
+                document.getElementById('sec-rss').style.display = 'block';
+                const rssGrid = document.getElementById('rssGrid');
+                rssFeeds.forEach(f => {
+                    const block = document.createElement('div');
+                    block.className = 'rss-block';
+                    block.innerHTML = `
+                        <h4>${esc(f.name)}</h4>
+                        ${f.items.map(it => `
+                            <a href="${esc(it.link)}" target="_blank" rel="noopener" class="rss-entry">
+                                <div class="title">${esc(it.title)}</div>
+                                ${it.time ? `<div class="ts">${esc(it.time)}</div>` : ''}
+                            </a>
+                        `).join('')}
+                    `;
+                    rssGrid.appendChild(block);
+                });
+            }
+
+            LOADING.classList.add('hidden');
+            MAIN.classList.add('loaded');
+
+        } catch (err) {
+            console.error('TrendRadar UI:', err);
+            LOADING.classList.add('hidden');
+            ERROR.classList.add('visible');
+        }
+    })();
+    </script>
+</body>
+</html>
